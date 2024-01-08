@@ -11,11 +11,16 @@ export default function Home() {
   const [cards, setCards] = useState<
     { front: string; back: string; type: string; subSection: string }[]
   >([]);
+  const [randomizedCards, setRandomizedCards] = useState<
+    { front: string; back: string; type: string; subSection: string }[]
+  >([]);
 
   const goToReview = () => {
     setState("review");
     let cards = setupCards(data, section, reviewType);
     setCards(cards);
+    cards = randomizeCards(cards);
+    setRandomizedCards(cards);
   };
 
   return (
@@ -130,7 +135,11 @@ export default function Home() {
       ) : null}
 
       {state === "review" ? (
-        <CardsLayout cards={cards} setState={setState} />
+        <CardsLayout
+          cards={cards}
+          randomizedCards={randomizedCards}
+          setState={setState}
+        />
       ) : null}
     </main>
   );
@@ -145,12 +154,18 @@ const randomizeCards = (
 
 const CardsLayout = ({
   cards,
+  randomizedCards,
   setState,
 }: {
   cards: { front: string; back: string; type: string; subSection: string }[];
+  randomizedCards: {
+    front: string;
+    back: string;
+    type: string;
+    subSection: string;
+  }[];
   setState: (state: string) => void;
 }) => {
-  const [randomizedCards, setRandomizedCards] = useState(randomizeCards(cards));
   const [cardIndex, setCardIndex] = useState(0);
   const [cardPosition, setCardPosition] = useState("front");
 
@@ -160,7 +175,6 @@ const CardsLayout = ({
     } else {
       //check if on last card
       if (cardIndex === randomizedCards.length - 1) {
-        setRandomizedCards(randomizeCards(cards));
         setCardIndex(0);
         setCardPosition("front");
       } else {
